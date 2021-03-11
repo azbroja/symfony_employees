@@ -40,7 +40,6 @@ class Groups
     public function __construct()
     {
         $this->employees = new ArrayCollection();
-        $this->groupParents = new ArrayCollection();
         $this->groups = new ArrayCollection();
     }
 
