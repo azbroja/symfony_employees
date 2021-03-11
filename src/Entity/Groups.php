@@ -29,9 +29,15 @@ class Groups
      */
     private $employees;
 
+    /**
+     * @ORM\OneToMany(targetEntity=GroupParent::class, mappedBy="groups")
+     */
+    private $groupParents;
+
     public function __construct()
     {
         $this->employees = new ArrayCollection();
+        $this->groupParents = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -73,6 +79,36 @@ class Groups
     {
         if ($this->employees->removeElement($employee)) {
             $employee->removeGroup($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|GroupParent[]
+     */
+    public function getGroupParents(): Collection
+    {
+        return $this->groupParents;
+    }
+
+    public function addGroupParent(GroupParent $groupParent): self
+    {
+        if (!$this->groupParents->contains($groupParent)) {
+            $this->groupParents[] = $groupParent;
+            $groupParent->setGroups($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroupParent(GroupParent $groupParent): self
+    {
+        if ($this->groupParents->removeElement($groupParent)) {
+            // set the owning side to null (unless already changed)
+            if ($groupParent->getGroups() === $this) {
+                $groupParent->setGroups(null);
+            }
         }
 
         return $this;
