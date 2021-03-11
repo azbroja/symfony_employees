@@ -30,14 +30,16 @@ class Groups
     private $employees;
 
     /**
-     * @ORM\OneToMany(targetEntity=GroupParent::class, mappedBy="groups")
+     * @ORM\ManyToOne(targetEntity=Groups::class, inversedBy="groups")
      */
-    private $groupParents;
+    private $groups;
+
 
     public function __construct()
     {
         $this->employees = new ArrayCollection();
         $this->groupParents = new ArrayCollection();
+        $this->groups = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -108,6 +110,40 @@ class Groups
             // set the owning side to null (unless already changed)
             if ($groupParent->getGroups() === $this) {
                 $groupParent->setGroups(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getGroups(): ?self
+    {
+        return $this->groups;
+    }
+
+    public function setGroups(?self $groups): self
+    {
+        $this->groups = $groups;
+
+        return $this;
+    }
+
+    public function addGroup(self $group): self
+    {
+        if (!$this->groups->contains($group)) {
+            $this->groups[] = $group;
+            $group->setGroups($this);
+        }
+
+        return $this;
+    }
+
+    public function removeGroup(self $group): self
+    {
+        if ($this->groups->removeElement($group)) {
+            // set the owning side to null (unless already changed)
+            if ($group->getGroups() === $this) {
+                $group->setGroups(null);
             }
         }
 
